@@ -1,7 +1,5 @@
 package com.example.lounah.trains;
 
-import android.app.Application;
-
 import com.example.lounah.trains.di.DaggerAppComponent;
 import com.squareup.leakcanary.LeakCanary;
 
