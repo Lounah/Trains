@@ -4,5 +4,12 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="first_fragment">Первый фрагмент</string>
+    <string name="second_fragment">Второй фрагмент</string>
+    <string name="second_nested_fragment">Вложенный фрагмент</string>
+    <string name="third_fragment">Третий фрагмент</string>
+
+    <string name="go_deep">Глубже</string>
+
     <string name="action_settings">Settings</string>
 </resources>

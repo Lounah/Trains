@@ -2,30 +2,26 @@ package com.example.lounah.trains;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.lounah.trains.ui.navigation.NavigationController;
 
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import dagger.android.support.DaggerAppCompatActivity;
+import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends DaggerAppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    @BindView(R.id.main_toolbar)
-    Toolbar toolbar;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawer;
@@ -41,22 +37,31 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        if (savedInstanceState == null) {
             initUI();
             mNavController.navigateToFirstFragment();
-        }
-
     }
 
     private void initUI() {
         ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawer.addDrawerListener(toggle);
-        toggle.syncState();
         mNavView.setNavigationItemSelectedListener(this);
+    }
+
+    public void onUpdateToolbar(@NonNull final Toolbar toolbar) {
+
+        Timber.i("BACKSTACK %s", mNavController.getBackStackCount());
+
+        setSupportActionBar(toolbar);
+
+        if ((mNavController.getBackStackCount() > 0) &&
+                (getSupportActionBar() != null) &&
+                        (mNavController != null)) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        } else {
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            mDrawer.addDrawerListener(toggle);
+            toggle.syncState();
+        }
     }
 
     @Override
@@ -75,27 +80,60 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         int id = item.getItemId();
 
         switch (id) {
             case R.id.action_settings:
+                break;
+            case android.R.id.home:
+                onBackPressed();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.nav_camera:
-                mDrawer.closeDrawer(GravityCompat.START);
+            case R.id.nav_first_fragment:
+                mNavController.navigateToFirstFragment();
+                break;
 
+            case R.id.nav_second_fragment:
+                mNavController.navigateToSecondFragment();
+                break;
+
+            case R.id.nav_third_fragment:
+                mNavController.navigateToThirdFragment();
                 break;
         }
-
+        mDrawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        Timber.i("ON PAUSE");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        Timber.i("ON STOP");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Timber.i("ON DESTROY");
+    }
+
+
 }
