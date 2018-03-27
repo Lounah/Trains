@@ -1,5 +1,6 @@
 package com.example.lounah.trains;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -32,13 +33,16 @@ public class MainActivity extends DaggerAppCompatActivity
     @Inject
     NavigationController mNavController;
 
+    private ActionBarDrawerToggle toggle;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-            initUI();
+        if (savedInstanceState == null)
             mNavController.navigateToFirstFragment();
+            initUI();
     }
 
     private void initUI() {
@@ -48,19 +52,22 @@ public class MainActivity extends DaggerAppCompatActivity
 
     public void onUpdateToolbar(@NonNull final Toolbar toolbar) {
 
-        Timber.i("BACKSTACK %s", mNavController.getBackStackCount());
-
         setSupportActionBar(toolbar);
+
+        toggle = new ActionBarDrawerToggle(
+                this, mDrawer, toolbar, R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+        mDrawer.addDrawerListener(toggle);
+        toggle.syncState();
 
         if ((mNavController.getBackStackCount() > 0) &&
                 (getSupportActionBar() != null) &&
                         (mNavController != null)) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                toolbar.setNavigationOnClickListener(v -> onBackPressed());
         } else {
-            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                    this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-            mDrawer.addDrawerListener(toggle);
-            toggle.syncState();
+            mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         }
     }
 
@@ -83,10 +90,14 @@ public class MainActivity extends DaggerAppCompatActivity
 
         int id = item.getItemId();
 
+        Timber.i("ON OPTIONS ITEM SELECTED");
+
         switch (id) {
             case R.id.action_settings:
                 break;
             case android.R.id.home:
+
+                Timber.i("ON OPTIONS ITEM SELECTED: HOME");
                 onBackPressed();
                 break;
         }
@@ -134,6 +145,8 @@ public class MainActivity extends DaggerAppCompatActivity
 
         Timber.i("ON DESTROY");
     }
+
+
 
 
 }
